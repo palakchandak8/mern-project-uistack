@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Edit2, Github, Mail, ExternalLink, LogOut } from 'lucide-react';
 
 // ========== BACKEND API CONNECTION ==========
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://mern-project-uistack.onrender.com/api';
 
 const api = {
   getUserProfile: async (userId) => {

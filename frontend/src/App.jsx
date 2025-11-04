@@ -5,7 +5,7 @@ import ProfilePage from './ProfilePage';
 import { components, categories, componentTypes } from './uiComponents';
 
 // ========== BACKEND API CONNECTION ==========
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://mern-project-uistack.onrender.com/api';
 
 const api = {
   // ========== AUTH ==========
