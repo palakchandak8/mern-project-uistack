@@ -54,7 +54,7 @@ UIStack simplifies the process of integrating modern UI elements into web applic
 
 - Node.js (v14 or above) ⚙️  
 - npm 📦  
-- MongoDB (local or Atlas) 🍃
+- MongoDB ( Atlas) 🍃
 
 ### Installation
 
@@ -68,7 +68,7 @@ cd backend
 npm install
 
 # Install frontend dependencies
-cd ../frontend
+cd ../src
 npm install
 ```
 
@@ -83,8 +83,8 @@ cd backend
 npm start
 
 # Run frontend (from frontend directory)
-cd frontend
-npm start
+cd src
+npm run dev
 ```
 
 The application is currently **working well on the local machine** and will be deployed soon! 🚀
