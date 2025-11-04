@@ -1,49 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Edit2, Github, Mail, ExternalLink, LogOut } from 'lucide-react';
 
-// This is ALREADY in the code - it's fake data for testing
+// ========== BACKEND API CONNECTION ==========
+const API_URL = 'http://localhost:5000/api';
+
 const api = {
   getUserProfile: async (userId) => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    return {
-      id: userId,
-      username: 'PalakChandak',
-      email: 'palak.chandak@somaiya.edu',
-      github: 'palakchandak8',
-      phone: '+1 234 567 8900',
-      joinDate: '2024-01-15',
-      bio: 'UI/UX enthusiast | Frontend Developer'
-    };
+    const res = await fetch(`${API_URL}/users/${userId}`);
+    return res.json();
   },
   
   getUserComponents: async (userId) => {
-    await new Promise(resolve => setTimeout(resolve, 600));
+    const res = await fetch(`${API_URL}/components/user/${userId}`);
+    return res.json();
+  },
 
-    return [
-      {
-        id: 'comp-1',
-        name: 'Gradient Button',
-        type: 'button',
-        createdAt: '2024-09-15',
-        likes: 45,
-        views: 230,
-        thumbnail: '#667eea'
-      },
-      {
-        id: 'comp-2',
-        name: 'Glass Card',
-        type: 'card',
-        createdAt: '2024-09-20',
-        likes: 78,
-        views: 456,
-        thumbnail: '#a855f7'
-      }
-    ];
+  updateUserProfile: async (userId, userData) => {
+    const res = await fetch(`${API_URL}/users/${userId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    return res.json();
   }
 };
 
-const ProfilePage = ({ userId, onBack, onLogout }) => {
+const ProfilePage = ({ userId, onBack, onLogout, onViewComponent }) => {
   const [userData, setUserData] = useState(null);
   const [userComponents, setUserComponents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -74,10 +56,14 @@ const ProfilePage = ({ userId, onBack, onLogout }) => {
 
   const handleSaveProfile = async () => {
     try {
-      // await api.updateUserProfile(userId, editedData);
-      setUserData(editedData);
-      setEditMode(false);
-      alert('Profile updated successfully!');
+      const result = await api.updateUserProfile(userId, editedData);
+      if (result.error) {
+        alert('Failed to update profile: ' + result.error);
+      } else {
+        setUserData(result);
+        setEditMode(false);
+        alert('Profile updated successfully!');
+      }
     } catch (error) {
       console.error('Error saving profile:', error);
       alert('Failed to update profile');
@@ -177,29 +163,33 @@ const ProfilePage = ({ userId, onBack, onLogout }) => {
                 <span>{userData.email}</span>
               )}
             </div>
-            <span>•</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Github size={14} />
-              {editMode ? (
-                <input
-                  type="text"
-                  value={editedData.github}
-                  onChange={(e) => setEditedData({...editedData, github: e.target.value})}
-                  className="input"
-                  style={{ fontSize: '14px', padding: '4px 8px' }}
-                />
-              ) : (
-                <a 
-                  href={`https://github.com/${userData.github}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#a855f7', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
-                >
-                  {userData.github}
-                  <ExternalLink size={12} />
-                </a>
-              )}
-            </div>
+            {userData.github && (
+              <>
+                <span>•</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Github size={14} />
+                  {editMode ? (
+                    <input
+                      type="text"
+                      value={editedData.github}
+                      onChange={(e) => setEditedData({...editedData, github: e.target.value})}
+                      className="input"
+                      style={{ fontSize: '14px', padding: '4px 8px' }}
+                    />
+                  ) : (
+                    <a 
+                      href={`https://github.com/${userData.github}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: '#a855f7', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      {userData.github}
+                      <ExternalLink size={12} />
+                    </a>
+                  )}
+                </div>
+              </>
+            )}
           </div>
 
           {editMode && (
@@ -208,7 +198,7 @@ const ProfilePage = ({ userId, onBack, onLogout }) => {
                 <label className="label">Phone</label>
                 <input
                   type="tel"
-                  value={editedData.phone}
+                  value={editedData.phone || ''}
                   onChange={(e) => setEditedData({...editedData, phone: e.target.value})}
                   className="input"
                 />
@@ -216,7 +206,7 @@ const ProfilePage = ({ userId, onBack, onLogout }) => {
               <div className="formGroup">
                 <label className="label">Bio</label>
                 <textarea
-                  value={editedData.bio}
+                  value={editedData.bio || ''}
                   onChange={(e) => setEditedData({...editedData, bio: e.target.value})}
                   className="input"
                   style={{ minHeight: '80px', resize: 'vertical' }}
@@ -293,7 +283,7 @@ const ProfilePage = ({ userId, onBack, onLogout }) => {
           border: '1px solid #333'
         }}>
           <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#a855f7', marginBottom: '8px' }}>
-            {userComponents.reduce((sum, comp) => sum + comp.likes, 0)}
+            {userComponents.reduce((sum, comp) => sum + (comp.likes || 0), 0)}
           </div>
           <div style={{ fontSize: '14px', color: '#666' }}>Total Likes</div>
         </div>
@@ -305,7 +295,7 @@ const ProfilePage = ({ userId, onBack, onLogout }) => {
           border: '1px solid #333'
         }}>
           <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#a855f7', marginBottom: '8px' }}>
-            {userComponents.reduce((sum, comp) => sum + comp.views, 0)}
+            {userComponents.reduce((sum, comp) => sum + (comp.views || 0), 0)}
           </div>
           <div style={{ fontSize: '14px', color: '#666' }}>Total Views</div>
         </div>
@@ -329,7 +319,8 @@ const ProfilePage = ({ userId, onBack, onLogout }) => {
         <div className="componentGrid">
           {userComponents.map((comp) => (
             <div 
-              key={comp.id} 
+              key={comp._id}
+              onClick={() => onViewComponent(comp)}
               style={{
                 backgroundColor: '#1f1f1f',
                 borderRadius: '12px',
@@ -343,7 +334,7 @@ const ProfilePage = ({ userId, onBack, onLogout }) => {
             >
               <div style={{
                 height: '160px',
-                background: `linear-gradient(135deg, ${comp.thumbnail} 0%, ${comp.thumbnail}dd 100%)`,
+                background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -369,8 +360,8 @@ const ProfilePage = ({ userId, onBack, onLogout }) => {
                   {comp.name}
                 </h3>
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '13px', color: '#666' }}>👁️ {comp.views}</span>
-                  <span style={{ fontSize: '13px', color: '#666' }}>❤️ {comp.likes}</span>
+                  <span style={{ fontSize: '13px', color: '#666' }}>👁️ {comp.views || 0}</span>
+                  <span style={{ fontSize: '13px', color: '#666' }}>❤️ {comp.likes || 0}</span>
                 </div>
                 <div style={{ fontSize: '12px', color: '#555' }}>
                   {new Date(comp.createdAt).toLocaleDateString('en-US', {
