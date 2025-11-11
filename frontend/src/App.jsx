@@ -955,7 +955,6 @@ const App = () => {
           user guide
         </button>
       </div>
-    </div>
   );
 
   const ComponentGridPage = () => {
