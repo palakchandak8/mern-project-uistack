@@ -936,14 +936,14 @@ const App = () => {
       <div className="actionButtons">
         <button 
           className="actionButton"
-          onClick={() => window.open('https://github.com/palakchandak8/UIStack', '_blank')}
+          onClick={() => window.open('https://github.com/palakchandak8/mern-project-uistack', '_blank')}
         >
           <Users size={18} />
           Join the community
         </button>
         <button 
           className="actionButton"
-          onClick={() => window.open('https://github.com/palakchandak8/UIStack', '_blank')}
+          onClick={() => window.open('https://github.com/palakchandak8/mern-project-uistack', '_blank')}
         >
           <Star size={18} />
           Star on GitHub
