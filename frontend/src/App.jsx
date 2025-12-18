@@ -43,6 +43,7 @@ const api = {
   },
 
   // ========== COMPONENTS ==========
+  
   getComponents: async (category = 'all') => {
     const url = category === 'all' 
       ? `${API_URL}/components` 
@@ -1170,3 +1171,4 @@ const App = () => {
 };
 
 export default App;
+    {/* Final */}
